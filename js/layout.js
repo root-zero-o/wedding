@@ -4,7 +4,7 @@ import { buildScenery } from "./scenery.js";
 import { placeStory, placeGallery } from "./content.js";
 import { placeGuest } from "./guestbook.js";
 
-const ZONE_WIDTHS = [1, 1.9, 1.15, 1.9, 1.5];
+const ZONE_WIDTHS = [1, 2.6, 1.15, 1.9, 1.5];
 
 export function layout() {
   const prog =

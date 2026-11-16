@@ -4,20 +4,52 @@ import { zonesEl } from "./dom.js";
 import { $, rng } from "./utils.js";
 import { spriteCanvas, ITEM_SPRITES, SKIN } from "./sprites.js";
 
+const DAY_MS = 86400000;
+
+function daysTogether(isoDate) {
+  const [y, m, d] = isoDate.split("-").map(Number);
+  const start = new Date(y, m - 1, d);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.round((today - start) / DAY_MS) + 1;
+}
+
 export function buildIntro() {
-  $("#i-date").textContent = CONFIG.dateText;
   $("#i-names").textContent = `${CONFIG.groom} ♥ ${CONFIG.bride}`;
   $("#i-lead").textContent = CONFIG.lead;
-  const dl = $("#i-info");
-  CONFIG.info.forEach(([k, v]) => {
-    const dt = document.createElement("dt");
-    dt.textContent = k;
-    const dd = document.createElement("dd");
-    dd.textContent = v;
-    dl.append(dt, dd);
-  });
+  $("#i-greeting").replaceChildren(
+    ...CONFIG.greeting.flatMap((line, i) =>
+      i ? [document.createElement("br"), line] : [line],
+    ),
+  );
+  $("#i-days").textContent = daysTogether(CONFIG.together).toLocaleString(
+    "ko-KR",
+  );
   if (matchMedia("(pointer:coarse)").matches)
-    $("#i-hint").textContent = "위로 쓸어 올리면 둘이 같이 걸어가요";
+    $("#i-hint").textContent = "아래로 스크롤 해보세요";
+}
+
+const POSTER_W = 300,
+  POSTER_H = 430;
+
+function buildMovies(images) {
+  const wrap = document.createElement("div");
+  wrap.className = "movies";
+  images.forEach(({ src, title, width = POSTER_W, height = POSTER_H }) => {
+    const fig = document.createElement("figure");
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = title;
+    img.width = width;
+    img.height = height;
+    img.loading = "lazy";
+    img.decoding = "async";
+    const cap = document.createElement("figcaption");
+    cap.textContent = title;
+    fig.append(img, cap);
+    wrap.append(fig);
+  });
+  return wrap;
 }
 
 export function buildStory() {
@@ -35,6 +67,7 @@ export function buildStory() {
     const p = document.createElement("p");
     p.textContent = s.text;
     b.append(a, h, p);
+    if (s.images?.length) b.append(buildMovies(s.images));
     const post = document.createElement("div");
     post.className = "post";
     w.append(b, post);

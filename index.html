@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <title>도윤 ♥ 지아 · 우리 결혼합니다</title>
+    <title>종현 ♥ 근영 · 우리 결혼했어요</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -73,6 +73,7 @@
         position: fixed;
         inset: 0;
         overflow: hidden;
+        overflow: clip;
       }
       #bg {
         position: absolute;
@@ -206,40 +207,40 @@
         padding: 28px 26px 24px;
         text-align: center;
       }
-      .invite .date {
-        font-family: var(--f-px);
-        font-size: clamp(26px, 6vw, 40px);
-        letter-spacing: 2px;
-        color: var(--pink);
-        line-height: 1;
-      }
       .invite h1 {
         font-family: var(--f-head);
         font-weight: 400;
         font-size: clamp(40px, 10vw, 64px);
-        margin: 14px 0 4px;
+        margin: 0 0 4px;
         line-height: 1.05;
       }
       .invite .lead {
         font-size: 17px;
+        margin: 0 0 14px;
+      }
+      .invite .greeting {
+        font-size: 15px;
+        line-height: 1.6;
+        color: var(--panel-sub);
         margin: 0 0 18px;
       }
-      .invite dl {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        gap: 6px 14px;
-        text-align: left;
-        margin: 0 auto;
-        max-width: 330px;
-        font-size: 15px;
-        line-height: 1.5;
+      .invite .together {
+        display: flex;
+        justify-content: center;
+        align-items: baseline;
+        gap: 6px;
       }
-      .invite dt {
+      .invite .together .label {
         font-family: var(--f-head);
+        font-size: 16px;
         color: var(--panel-sub);
       }
-      .invite dd {
-        margin: 0;
+      .invite .together .num {
+        font-family: var(--f-px);
+        font-size: clamp(26px, 6vw, 36px);
+        letter-spacing: 2px;
+        color: var(--pink);
+        line-height: 1;
       }
       .hint {
         margin-top: 20px;
@@ -298,6 +299,31 @@
         margin: 0;
         font-size: 15px;
         line-height: 1.6;
+        white-space: pre-line;
+      }
+      .sign .movies {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .sign .movies figure {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      .sign .movies img {
+        display: block;
+        height: clamp(90px, calc(var(--areaH) * 0.3), 170px);
+        width: auto;
+        object-fit: cover;
+        box-shadow: 0 0 0 3px var(--ink);
+      }
+      .sign .movies figcaption {
+        font-size: 12px;
+        color: var(--panel-sub);
       }
 
       /* likes shop */
@@ -678,10 +704,13 @@
         <section class="zone" id="z-intro" aria-label="소개">
           <div class="area">
             <div class="center invite px">
-              <div class="date" id="i-date"></div>
               <h1 id="i-names"></h1>
               <p class="lead" id="i-lead"></p>
-              <dl id="i-info"></dl>
+              <p class="greeting" id="i-greeting"></p>
+              <div class="together">
+                <span class="label">함께한 날</span>
+                <span class="num" id="i-days"></span><span class="label">일</span>
+              </div>
               <div class="hint">
                 <span id="i-hint">스크롤하면 둘이 같이 걸어가요</span> <b>▶</b>
               </div>
