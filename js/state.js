@@ -1,0 +1,21 @@
+/* layout + camera state shared across modules (written by layout.js / main.js) */
+export const state = {
+  VW: 0,
+  VH: 0,
+  P: 4,
+  S: 6,
+  WA: 0,
+  HA: 0,
+  G: 0,
+  groundY: 0,
+  zw: [],
+  zs: [],
+  total: 0,
+  camMin: 0,
+  camMax: 0,
+  areaTop: 0,
+  areaH: 0,
+  cam: 0,
+  camTarget: 0,
+  scenery: null,
+};
