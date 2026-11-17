@@ -20,11 +20,12 @@ let lastStopX = null;
 const nearestIdx = (xs, x, ids = xs.map((_, i) => i)) =>
   ids.reduce((a, b) => (Math.abs(xs[b] - x) < Math.abs(xs[a] - x) ? b : a));
 
-function pickSign(xs, center, gap) {
+function pickSign(xs, center, gap, freeIdx) {
   if (anchorIdx === null) return nearestIdx(xs, center);
   const delta = center - xs[anchorIdx];
   if (Math.abs(delta) < Math.min(SNAP_FLICK_MAX_PX, gap * SNAP_FLICK_RATIO))
     return nearestIdx(xs, center);
+  if (anchorIdx === freeIdx) return null;
   const ahead = xs
     .map((_, i) => i)
     .filter((i) => (delta > 0 ? i > anchorIdx : i < anchorIdx));
@@ -42,15 +43,16 @@ function snapTargets() {
   const gap = signs.length > 1 ? signs[1] - signs[0] : VW;
   const likesX = zs[LIKES_ZONE] + zw[LIKES_ZONE] / 2;
   const zoneRange = (z) => [zs[z], zs[z] + zw[z]];
-  const guestX = zs[GUEST_ZONE] + Math.min(VW, zw[GUEST_ZONE]) / 2;
+  const guestX = zs[GUEST_ZONE] + zw[GUEST_ZONE] / 2;
   const ranges = [
     signs.length ? [signs[0] - gap / 2, signs.at(-1) + gap / 2] : null,
     zoneRange(LIKES_ZONE),
     frames.length ? zoneRange(GALLERY_ZONE) : null,
-    [zs[GUEST_ZONE], guestX + VW / 2],
+    [guestX - VW / 2, guestX + VW / 2],
   ].filter(Boolean);
   const inRange = (c) => ranges.some(([a, b]) => c >= a && c <= b);
-  return { xs: [...signs, likesX, ...frames, guestX], gap, inRange };
+  const xs = [...signs, likesX, ...frames, guestX];
+  return { xs, gap, inRange, freeIdx: xs.length - 1 };
 }
 
 function approachIdx(xs, center, prev) {
@@ -62,7 +64,7 @@ function approachIdx(xs, center, prev) {
 
 function snapToStop() {
   const { camMin, camMax, VW } = state;
-  const { xs, gap, inRange } = snapTargets();
+  const { xs, gap, inRange, freeIdx } = snapTargets();
   const center = camMin + window.scrollY + VW / 2;
   const prev = lastStopX;
   lastStopX = center;
@@ -73,7 +75,7 @@ function snapToStop() {
   anchorIdx =
     anchorIdx === null
       ? approachIdx(xs, center, prev)
-      : pickSign(xs, center, gap);
+      : pickSign(xs, center, gap, freeIdx);
   if (anchorIdx === null) return;
   const top =
     Math.min(camMax, Math.max(camMin, xs[anchorIdx] - VW / 2)) - camMin;
@@ -81,10 +83,22 @@ function snapToStop() {
   window.scrollTo({ top, behavior: reduceMotion ? "auto" : "smooth" });
 }
 
+function zoneEntryX(i) {
+  const { zs, zw } = state;
+  if (i === STORY_ZONE) {
+    const first = zonesEl[STORY_ZONE].querySelector(".sign");
+    if (first) return zs[i] + parseFloat(first.style.left);
+  }
+  if (i === GALLERY_ZONE && state.galleryStops.length)
+    return zs[i] + state.galleryStops[0];
+  return zs[i] + zw[i] / 2;
+}
+
 export function goToZone(i) {
-  const { camMin, camMax, zs, zw, VW } = state;
-  const center = i === GUEST_ZONE ? zs[i] : zs[i] + zw[i] / 2 - VW / 2;
-  const target = Math.min(camMax, Math.max(camMin, center));
+  const { camMin, camMax, VW } = state;
+  const target = Math.min(camMax, Math.max(camMin, zoneEntryX(i) - VW / 2));
+  anchorIdx = null;
+  lastStopX = null;
   window.scrollTo({
     top: target - camMin,
     behavior: reduceMotion ? "auto" : "smooth",

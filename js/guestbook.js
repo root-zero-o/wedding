@@ -18,7 +18,7 @@ let slots = [];
 export function placeGuest() {
   const { zw, VW, areaTop, areaH } = state;
   const sign = $("#gbSign");
-  const signX = Math.min(VW, zw[4]) / 2;
+  const signX = zw[4] / 2;
   sign.style.left = signX + "px";
   sign.style.top = areaTop + 8 + "px";
   // build slot grid avoiding the sign
