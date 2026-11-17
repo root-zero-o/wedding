@@ -35,20 +35,23 @@ const POSTER_W = 300,
 function buildMovies(images) {
   const wrap = document.createElement("div");
   wrap.className = "movies";
-  images.forEach(({ src, title, width = POSTER_W, height = POSTER_H }) => {
-    const fig = document.createElement("figure");
-    const img = document.createElement("img");
-    img.src = src;
-    img.alt = title;
-    img.width = width;
-    img.height = height;
-    img.loading = "lazy";
-    img.decoding = "async";
-    const cap = document.createElement("figcaption");
-    cap.textContent = title;
-    fig.append(img, cap);
-    wrap.append(fig);
-  });
+  images.forEach(
+    ({ src, title, width = POSTER_W, height = POSTER_H, large }) => {
+      const fig = document.createElement("figure");
+      const img = document.createElement("img");
+      if (large) img.className = "large";
+      img.src = src;
+      img.alt = title;
+      img.width = width;
+      img.height = height;
+      img.loading = "lazy";
+      img.decoding = "async";
+      const cap = document.createElement("figcaption");
+      cap.textContent = title;
+      fig.append(img, cap);
+      wrap.append(fig);
+    },
+  );
   return wrap;
 }
 
@@ -185,11 +188,17 @@ function placeholderPhoto(i) {
   return c;
 }
 
-function photoNode(p, i) {
+function photoNode(p, i, isFull = false) {
   if (p.src) {
     const im = new Image();
-    im.src = p.src;
-    im.alt = p.caption || "";
+    im.src = isFull ? p.full || p.src : p.src;
+    im.alt = p.caption || `사진 ${i + 1}`;
+    if (p.width && p.height) {
+      im.width = p.width;
+      im.height = p.height;
+    }
+    im.decoding = "async";
+    if (!isFull) im.loading = "lazy";
     return im;
   }
   const c = placeholderPhoto(i);
@@ -198,48 +207,108 @@ function photoNode(p, i) {
   return c;
 }
 
+export const GALLERY_TITLE_PX = 60;
+const PAIR_OFFSET_RATIO = 0.2;
+const SWIPE_MIN_PX = 50;
+let lbIdx = 0;
+
+function showPhoto(i) {
+  const n = CONFIG.photos.length;
+  lbIdx = (i + n) % n;
+  const p = CONFIG.photos[lbIdx];
+  $("#lbMedia").replaceChildren(photoNode(p, lbIdx, true));
+  $("#lbCap").textContent = p.caption || "";
+  $("#lbCount").textContent = `${lbIdx + 1} / ${n}`;
+}
+
+function openLightbox(i) {
+  showPhoto(i);
+  $("#lightbox").showModal();
+}
+
 export function buildGallery() {
   const z = zonesEl[3];
   const t = document.createElement("div");
   t.className = "room-title";
-  t.textContent = "우리 사진 전시회";
+  const sub = document.createElement("span");
+  sub.className = "room-sub";
+  sub.textContent = "클릭하면 확대돼요";
+  t.append("웨딩 사진 전시회", sub);
   t.id = "roomTitle";
   z.append(t);
   CONFIG.photos.forEach((p, i) => {
     const f = document.createElement("div");
     f.className = "frame";
     const b = document.createElement("button");
-    b.setAttribute("aria-label", (p.caption || "사진") + " 크게 보기");
+    b.setAttribute("aria-label", (p.caption || `사진 ${i + 1}`) + " 크게 보기");
     b.append(photoNode(p, i));
-    const pl = document.createElement("div");
-    pl.className = "plaque";
-    pl.textContent = p.caption || "";
-    b.addEventListener("click", () => {
-      const m = $("#lbMedia");
-      m.replaceChildren(photoNode(p, i));
-      $("#lbCap").textContent = p.caption || "";
-      $("#lightbox").showModal();
-    });
-    f.append(b, pl);
+    b.addEventListener("click", () => openLightbox(i));
+    f.append(b);
+    if (p.caption) {
+      const pl = document.createElement("div");
+      pl.className = "plaque";
+      pl.textContent = p.caption;
+      f.append(pl);
+    }
     z.append(f);
   });
 }
 
+export function galleryGroups(isPaired) {
+  const idx = CONFIG.photos.map((_, i) => i);
+  if (!isPaired || !idx.length) return idx.map((i) => [i]);
+  const [first, ...rest] = idx;
+  const pairs = [];
+  for (let k = 0; k < rest.length; k += 2) pairs.push(rest.slice(k, k + 2));
+  return [[first], ...pairs];
+}
+
 export function placeGallery() {
-  const { zw, areaTop, areaH } = state;
-  const fr = [...zonesEl[3].querySelectorAll(".frame")],
-    n = fr.length;
-  const y = areaTop + areaH * 0.55;
-  fr.forEach((f, i) => {
-    f.style.left = zw[3] * ((i + 0.5) / n) + "px";
-    f.style.top = y + "px";
+  const { zw, VW, areaTop, areaH, galleryPaired } = state;
+  const fr = [...zonesEl[3].querySelectorAll(".frame")];
+  const groups = galleryGroups(galleryPaired);
+  const slot = zw[3] / Math.max(1, groups.length);
+  const pairOffset = Math.min(VW, slot) * PAIR_OFFSET_RATIO;
+  const y = areaTop + GALLERY_TITLE_PX + (areaH - GALLERY_TITLE_PX) / 2;
+  const stops = groups.map((g, gi) => {
+    const cx = slot * (gi + 0.5);
+    g.forEach((pi, k) => {
+      const dx = g.length > 1 ? (k ? pairOffset : -pairOffset) : 0;
+      fr[pi].style.left = cx + dx + "px";
+      fr[pi].style.top = y + "px";
+    });
+    return cx;
   });
-  $("#roomTitle").style.left = zw[3] / 2 + "px";
+  state.galleryStops = stops;
+  $("#roomTitle").style.left = (stops[0] ?? zw[3] / 2) + "px";
 }
 
 export function bindLightbox() {
-  $("#lbClose").addEventListener("click", () => $("#lightbox").close());
-  $("#lightbox").addEventListener("click", (e) => {
-    if (e.target.id === "lightbox") e.target.close();
+  const lb = $("#lightbox");
+  const multi = CONFIG.photos.length > 1;
+  $("#lbPrev").hidden = $("#lbNext").hidden = !multi;
+  $("#lbClose").addEventListener("click", () => lb.close());
+  $("#lbPrev").addEventListener("click", () => showPhoto(lbIdx - 1));
+  $("#lbNext").addEventListener("click", () => showPhoto(lbIdx + 1));
+  lb.addEventListener("click", (e) => {
+    if (e.target === lb) lb.close();
+  });
+  lb.addEventListener("keydown", (e) => {
+    if (!multi) return;
+    if (e.key === "ArrowLeft") showPhoto(lbIdx - 1);
+    else if (e.key === "ArrowRight") showPhoto(lbIdx + 1);
+    else return;
+    e.preventDefault();
+  });
+  let touchX = null;
+  const media = $("#lbMedia");
+  media.addEventListener("touchstart", (e) => (touchX = e.touches[0].clientX), {
+    passive: true,
+  });
+  media.addEventListener("touchend", (e) => {
+    if (touchX === null || !multi) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    touchX = null;
+    if (Math.abs(dx) >= SWIPE_MIN_PX) showPhoto(lbIdx + (dx < 0 ? 1 : -1));
   });
 }

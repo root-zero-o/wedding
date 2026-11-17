@@ -321,6 +321,9 @@
         object-fit: cover;
         box-shadow: 0 0 0 3px var(--ink);
       }
+      .sign .movies img.large {
+        height: clamp(140px, calc(var(--areaH) * 0.5), 300px);
+      }
       .sign .movies figcaption {
         font-size: 12px;
         color: var(--panel-sub);
@@ -449,12 +452,17 @@
           inset 0 0 0 4px #f2c14e,
           10px 10px 0 rgba(40, 20, 60, 0.22);
       }
-      .frame canvas,
-      .frame img {
+      .frame canvas {
         display: block;
         width: var(--frameW);
         height: calc(var(--frameW) * 0.75);
-        object-fit: cover;
+      }
+      .frame img {
+        display: block;
+        width: auto;
+        height: auto;
+        max-width: var(--frameW);
+        max-height: var(--frameH);
         background: #ddd;
       }
       .frame .plaque {
@@ -477,6 +485,13 @@
         font-size: 22px;
         color: #4a3a6e;
         white-space: nowrap;
+      }
+      .room-sub {
+        display: block;
+        text-align: center;
+        font-family: var(--f-body);
+        font-size: 14px;
+        opacity: 0.75;
       }
 
       /* guestbook */
@@ -679,11 +694,91 @@
       }
       #lightbox .cap {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        gap: 12px;
         margin-top: 12px;
         font-family: var(--f-head);
         font-size: 18px;
+      }
+      #lbCap {
+        flex: 1;
+      }
+      .lb-count {
+        font-family: var(--f-px);
+        font-size: 13px;
+        color: var(--pink);
+      }
+      .lb-stage {
+        position: relative;
+      }
+      .lb-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 44px;
+        height: 44px;
+        border: 0;
+        cursor: pointer;
+        font-size: 16px;
+        color: #fff;
+        background: var(--ink);
+        box-shadow:
+          0 -3px 0 #fff,
+          0 3px 0 #fff,
+          -3px 0 0 #fff,
+          3px 0 0 #fff;
+        opacity: 0.85;
+      }
+      .lb-arrow:hover {
+        background: var(--pink);
+        opacity: 1;
+      }
+      .lb-arrow:active {
+        transform: translateY(calc(-50% + 2px));
+      }
+      .lb-arrow.prev {
+        left: 12px;
+      }
+      .lb-arrow.next {
+        right: 12px;
+      }
+      /* maker credit */
+      #credit-btn {
+        position: fixed;
+        z-index: 10;
+        right: 14px;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        font-family: var(--f-px);
+        font-size: 13px;
+        letter-spacing: -1px;
+      }
+      #credit {
+        inset: auto;
+        right: 14px;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 66px);
+        margin: 0;
+        border: 0;
+        width: max-content;
+        max-width: calc(100vw - 28px);
+        padding: 12px 16px;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      #credit p {
+        margin: 0 0 6px;
+      }
+      #credit a {
+        font-family: var(--f-px);
+        font-size: 12px;
+        color: var(--pink);
+        word-break: break-all;
+      }
+      #credit a:focus-visible {
+        outline: 3px dashed var(--gold);
+        outline-offset: 3px;
       }
       @media (prefers-reduced-motion: reduce) {
         .hint b,
@@ -755,6 +850,24 @@
     </div>
     <canvas id="hero" aria-hidden="true"></canvas>
     <nav id="nav" class="px" aria-label="섹션 이동"></nav>
+    <button
+      class="px-btn"
+      id="credit-btn"
+      type="button"
+      popovertarget="credit"
+      aria-label="만든 사람 정보"
+    >
+      &lt;/&gt;
+    </button>
+    <div id="credit" class="px" popover>
+      <p>신부가 직접 만든 페이지예요 🛠</p>
+      <a
+        href="https://github.com/root-zero-o/wedding"
+        target="_blank"
+        rel="noopener noreferrer"
+        >github.com/root-zero-o/wedding</a
+      >
+    </div>
 
     <dialog id="gbDialog">
       <div class="dlg px">
@@ -772,26 +885,17 @@
         </div>
       </div>
     </dialog>
-    <dialog id="lightbox">
+    <dialog id="lightbox" aria-label="사진 크게 보기">
       <div class="dlg px">
-        <div id="lbMedia"></div>
+        <div class="lb-stage">
+          <div id="lbMedia"></div>
+          <button class="lb-arrow prev" id="lbPrev" type="button" aria-label="이전 사진">◀</button>
+          <button class="lb-arrow next" id="lbNext" type="button" aria-label="다음 사진">▶</button>
+        </div>
         <div class="cap">
-          <span id="lbCap"></span
-          ><button
-            class="ghost"
-            id="lbClose"
-            type="button"
-            style="
-              font-family: var(--f-head);
-              font-size: 17px;
-              background: none;
-              border: 0;
-              color: inherit;
-              cursor: pointer;
-            "
-          >
-            닫기
-          </button>
+          <span id="lbCap"></span>
+          <span class="lb-count" id="lbCount"></span>
+          <button class="ghost" id="lbClose" type="button">닫기</button>
         </div>
       </div>
     </dialog>

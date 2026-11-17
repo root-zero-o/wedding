@@ -18,7 +18,8 @@ let slots = [];
 export function placeGuest() {
   const { zw, VW, areaTop, areaH } = state;
   const sign = $("#gbSign");
-  sign.style.left = zw[4] / 2 + "px";
+  const signX = Math.min(VW, zw[4]) / 2;
+  sign.style.left = signX + "px";
   sign.style.top = areaTop + 8 + "px";
   // build slot grid avoiding the sign
   const signW = Math.min(340, VW * 0.84) + 40,
@@ -35,17 +36,17 @@ export function placeGuest() {
     for (let x = x0; x <= x1; x += stepX) {
       const jx = x + (r() - 0.5) * 26,
         jy = y + (r() - 0.5) * 22;
-      if (Math.abs(jx - zw[4] / 2) < signW / 2 + 20 && jy < areaTop + 8 + signH)
+      if (Math.abs(jx - signX) < signW / 2 + 20 && jy < areaTop + 8 + signH)
         continue;
       slots.push([jx, jy, r()]);
     }
   // order: start near the bottom-center, spread outwards
   slots.sort(
     (a, b) =>
-      Math.abs(a[0] - zw[4] / 2) * 0.6 +
+      Math.abs(a[0] - signX) * 0.6 +
       (y1 - a[1]) * 1.4 +
       a[2] * 520 -
-      (Math.abs(b[0] - zw[4] / 2) * 0.6 + (y1 - b[1]) * 1.4 + b[2] * 520),
+      (Math.abs(b[0] - signX) * 0.6 + (y1 - b[1]) * 1.4 + b[2] * 520),
   );
   renderHolds(false);
 }

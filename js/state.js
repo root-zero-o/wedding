@@ -18,4 +18,6 @@ export const state = {
   cam: 0,
   camTarget: 0,
   scenery: null,
+  galleryPaired: false,
+  galleryStops: [],
 };
