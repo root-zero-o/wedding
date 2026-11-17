@@ -4,17 +4,18 @@ import { zonesEl } from "./dom.js";
 
 const ZONE_NAMES = ["소개", "이야기", "좋아하는 것", "갤러리", "방명록"];
 const ARROW_SCROLL_RATIO = 0.45;
+const INTRO_ZONE = 0;
 const STORY_ZONE = 1;
 const LIKES_ZONE = 2;
 const GALLERY_ZONE = 3;
 const GUEST_ZONE = 4;
-const SNAP_DELAY_MS = 50;
+const SNAP_DELAY_MS = 150;
 const SNAP_EPSILON_PX = 2;
 const SNAP_FLICK_RATIO = 0.15;
-const SNAP_FLICK_MAX_PX = 40;
+const SNAP_FLICK_MAX_PX = 20;
 let navBtns = [];
 let snapTimer;
-let anchorIdx = null;
+let anchorIdx = 0;
 let lastStopX = null;
 
 const nearestIdx = (xs, x, ids = xs.map((_, i) => i)) =>
@@ -39,19 +40,21 @@ function snapTargets() {
       (el) => zs[z] + parseFloat(el.style.left),
     );
   const signs = xsOf(STORY_ZONE, ".sign");
+  const introX = zs[INTRO_ZONE] + zw[INTRO_ZONE] / 2;
   const frames = state.galleryStops.map((x) => zs[GALLERY_ZONE] + x);
   const gap = signs.length > 1 ? signs[1] - signs[0] : VW;
   const likesX = zs[LIKES_ZONE] + zw[LIKES_ZONE] / 2;
   const zoneRange = (z) => [zs[z], zs[z] + zw[z]];
   const guestX = zs[GUEST_ZONE] + zw[GUEST_ZONE] / 2;
   const ranges = [
+    [introX, signs.length ? signs[0] : zs[STORY_ZONE]],
     signs.length ? [signs[0] - gap / 2, signs.at(-1) + gap / 2] : null,
     zoneRange(LIKES_ZONE),
     frames.length ? zoneRange(GALLERY_ZONE) : null,
     [guestX - VW / 2, guestX + VW / 2],
   ].filter(Boolean);
   const inRange = (c) => ranges.some(([a, b]) => c >= a && c <= b);
-  const xs = [...signs, likesX, ...frames, guestX];
+  const xs = [introX, ...signs, likesX, ...frames, guestX];
   return { xs, gap, inRange, freeIdx: xs.length - 1 };
 }
 

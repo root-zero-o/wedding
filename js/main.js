@@ -8,7 +8,7 @@ import { initNav, setActiveNav } from './nav.js';
 import { drawBg } from './scenery.js';
 import { updateHero } from './hero.js';
 
-const CAM_EASE=.22, CAM_SNAP=.3, RESIZE_DEBOUNCE_MS=120;
+const CAM_EASE=.38, CAM_SNAP=.3, RESIZE_DEBOUNCE_MS=120;
 let prevCam=0, curNav=-1, resizeTimer;
 
 function zoneAt(cx){ let z=0; state.zs.forEach((s,i)=>{ if(cx>=s) z=i; }); return z; }

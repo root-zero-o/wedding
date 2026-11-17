@@ -27,7 +27,8 @@ export function buildScenery(){
 }
 
 /* zone-local art x → screen art x with parallax factor p (1 = moves with ground) */
-function px(i,lx,p){const {zs,zw,P,cam,WA}=state;const zsA=zs[i]/P,zwA=zw[i]/P,camA=cam/P,cc=zsA+zwA/2-WA/2;return Math.round(zsA+lx-camA+(camA-cc)*(1-p))}
+let camA=0;
+function px(i,lx,p){const {zs,zw,P,WA}=state;const zsA=zs[i]/P,zwA=zw[i]/P,cc=zsA+zwA/2-WA/2;return Math.round(zsA+lx-camA+(camA-cc)*(1-p))}
 
 function drawZ0(i,x0,x1){
   const {G,HA,zw,P,scenery}=state;
@@ -99,7 +100,8 @@ const DRAW=[drawZ0,drawZ1,drawZ2,drawZ3,drawZ4];
 
 export function drawBg(){
   const {zs,zw,P,cam,WA,HA,G}=state;
-  const camA=cam/P;
+  camA=Math.floor(cam/P);
+  bg.style.transform=`translate3d(${camA*P-cam}px,0,0)`;
   for(let i=0;i<5;i++){
     const a=zs[i]/P-camA, b=a+zw[i]/P;
     const x0=Math.max(0,Math.floor(a)), x1=Math.min(WA,Math.ceil(b)); if(x1<=x0)continue;
