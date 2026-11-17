@@ -14,7 +14,7 @@ let prevCam=0, curNav=-1, resizeTimer;
 function zoneAt(cx){ let z=0; state.zs.forEach((s,i)=>{ if(cx>=s) z=i; }); return z; }
 
 function frame(now){
-  state.camTarget = state.camMin + window.scrollY;
+  state.camTarget = state.camMin + window.scrollX;
   state.cam = reduceMotion ? state.camTarget : state.cam + (state.camTarget-state.cam)*CAM_EASE;
   if(Math.abs(state.camTarget-state.cam)<CAM_SNAP) state.cam=state.camTarget;
   const d=state.cam-prevCam; prevCam=state.cam;

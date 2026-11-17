@@ -1,6 +1,7 @@
 import { state } from './state.js';
 import { bg } from './dom.js';
 import { rng } from './utils.js';
+const MOBILE_MAX_VW=600;
 
 const ctx=bg.getContext('2d');
 
@@ -60,12 +61,12 @@ function drawZ1(i,x0,x1){
 }
 
 function drawZ2(i,x0,x1){
-  const {G,HA,zw,P}=state;
+  const {G,HA,zw,P,VW}=state;
   const o=px(i,0,1), cols=["#9a6440","#8d5a39","#a36c46"];
   for(let x=Math.floor(x0);x<x1;x++){const u=x-o, k=Math.floor(u/9); R(x,0,1,G,cols[((k%3)+3)%3]); if(((u%9)+9)%9===0)R(x,0,1,G,"#5e3a24")}
   R(x0,0,x1-x0,6,"#5e3a24"); R(x0,6,x1-x0,1,"#3f2718"); R(x0,G-18,x1-x0,2,"#5e3a24"); R(x0,G-16,x1-x0,16,"#7a4c30");
   const A=zw[i]/P;
-  for(const fx of [A*.1,A*.9]){const x=px(i,fx,1); R(x-18,G*.45,36,2,"#3f2718"); const jc=["#7ae582","#ff9f1c","#5db8ff","#ff5d8f","#f2c14e"]; for(let k=0;k<5;k++){R(x-16+k*7,G*.45-6-(k%2)*2,5,6+(k%2)*2,jc[k]);R(x-16+k*7,G*.45-7-(k%2)*2,5,1,"#efe8d6")}
+  for(const fx of VW<MOBILE_MAX_VW?[]:[A*.1,A*.9]){const x=px(i,fx,1); R(x-18,G*.45,36,2,"#3f2718"); const jc=["#7ae582","#ff9f1c","#5db8ff","#ff5d8f","#f2c14e"]; for(let k=0;k<5;k++){R(x-16+k*7,G*.45-6-(k%2)*2,5,6+(k%2)*2,jc[k]);R(x-16+k*7,G*.45-7-(k%2)*2,5,1,"#efe8d6")}
     R(x-18,G*.62,36,2,"#3f2718"); for(let k=0;k<4;k++)R(x-14+k*8,G*.62-8,6,8,["#c49a6c","#e8d8c0","#b07850","#d9b38c"][k])}
   for(const fx of [A*.3,A*.7]){const x=px(i,fx,1); R(x,6,1,12,"#2b2340"); ctx.globalAlpha=.2;disc(x,24,11,"#ffb347");ctx.globalAlpha=1; R(x-4,18,9,4,"#2b2340"); R(x-2,22,5,1,"#ffe9a3")}
   R(x0,G,x1-x0,HA-G,"#6b4630"); R(x0,G,x1-x0,2,"#8a5a3c"); for(let y=G+6;y<HA;y+=6)R(x0,y,x1-x0,1,"#4f3322");

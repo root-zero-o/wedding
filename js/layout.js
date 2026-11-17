@@ -10,6 +10,8 @@ import {
 import { placeGuest } from "./guestbook.js";
 
 const ZONE_WIDTHS = [1, 2.6, 1.15, 1.9, 1.5];
+const INTRO_ZONE = 0;
+const LIKES_ZONE = 2;
 const GALLERY_ZONE = 3;
 const GUEST_ZONE = 4;
 const GUEST_MIN_W = 1000;
@@ -36,6 +38,8 @@ export function layout() {
     Math.round((galleryGroups(galleryPaired).length * VW) / P) * P,
   );
   zw[GUEST_ZONE] = Math.round(Math.max(VW, GUEST_MIN_W) / P) * P;
+  zw[INTRO_ZONE] = Math.round(VW / P) * P;
+  zw[LIKES_ZONE] = Math.round(VW / P) * P;
   const zs = zw.map((_, i) => zw.slice(0, i).reduce((a, b) => a + b, 0));
   const total = zw.reduce((a, b) => a + b, 0);
   const groundY = Math.round((VH - Math.max(80, VH * 0.15)) / P) * P;
@@ -67,7 +71,7 @@ export function layout() {
     galleryPaired,
   });
 
-  spacer.style.height = camMax - camMin + VH + "px";
+  spacer.style.width = camMax - camMin + VW + "px";
   bg.width = WA;
   bg.height = HA;
   bg.style.width = WA * P + "px";
@@ -107,6 +111,6 @@ export function layout() {
   placeGallery();
   placeGuest();
   const top = prog * (camMax - camMin);
-  window.scrollTo(0, top);
+  window.scrollTo(top, 0);
   state.camTarget = state.cam = camMin + top;
 }

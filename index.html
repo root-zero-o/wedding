@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
+      content="width=device-width, initial-scale=1, minimum-scale=1, viewport-fit=cover"
     />
     <title>종현 ♥ 근영 · 우리 결혼했어요</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -52,7 +52,13 @@
         box-sizing: inherit;
       }
       html {
-        scroll-padding-top: env(safe-area-inset-top, 0px);
+        overflow-x: auto;
+        overflow-y: hidden;
+        overscroll-behavior: none;
+        scrollbar-width: none;
+      }
+      html::-webkit-scrollbar {
+        display: none;
       }
       html,
       body {
@@ -67,7 +73,7 @@
         image-rendering: crisp-edges;
       }
       #spacer {
-        width: 1px;
+        height: 1px;
       }
       #stage {
         position: fixed;

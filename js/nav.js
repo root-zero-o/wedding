@@ -8,7 +8,7 @@ const STORY_ZONE = 1;
 const LIKES_ZONE = 2;
 const GALLERY_ZONE = 3;
 const GUEST_ZONE = 4;
-const SNAP_DELAY_MS = 60;
+const SNAP_DELAY_MS = 50;
 const SNAP_EPSILON_PX = 2;
 const SNAP_FLICK_RATIO = 0.15;
 const SNAP_FLICK_MAX_PX = 40;
@@ -65,7 +65,7 @@ function approachIdx(xs, center, prev) {
 function snapToStop() {
   const { camMin, camMax, VW } = state;
   const { xs, gap, inRange, freeIdx } = snapTargets();
-  const center = camMin + window.scrollY + VW / 2;
+  const center = camMin + window.scrollX + VW / 2;
   const prev = lastStopX;
   lastStopX = center;
   if (!inRange(center)) {
@@ -79,8 +79,8 @@ function snapToStop() {
   if (anchorIdx === null) return;
   const top =
     Math.min(camMax, Math.max(camMin, xs[anchorIdx] - VW / 2)) - camMin;
-  if (Math.abs(top - window.scrollY) < SNAP_EPSILON_PX) return;
-  window.scrollTo({ top, behavior: reduceMotion ? "auto" : "smooth" });
+  if (Math.abs(top - window.scrollX) < SNAP_EPSILON_PX) return;
+  window.scrollTo({ left: top, behavior: reduceMotion ? "auto" : "smooth" });
 }
 
 function zoneEntryX(i) {
@@ -100,7 +100,7 @@ export function goToZone(i) {
   anchorIdx = null;
   lastStopX = null;
   window.scrollTo({
-    top: target - camMin,
+    left: target - camMin,
     behavior: reduceMotion ? "auto" : "smooth",
   });
 }
@@ -123,8 +123,8 @@ export function initNav() {
     "wheel",
     (e) => {
       if (document.querySelector("dialog[open]")) return;
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-        window.scrollBy(0, e.deltaX);
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        window.scrollBy(e.deltaY, 0);
         e.preventDefault();
       }
     },
@@ -146,11 +146,11 @@ export function initNav() {
       return;
     const step = state.VW * ARROW_SCROLL_RATIO;
     if (e.key === "ArrowRight") {
-      window.scrollBy({ top: step, behavior: "smooth" });
+      window.scrollBy({ left: step, behavior: "smooth" });
       e.preventDefault();
     }
     if (e.key === "ArrowLeft") {
-      window.scrollBy({ top: -step, behavior: "smooth" });
+      window.scrollBy({ left: -step, behavior: "smooth" });
       e.preventDefault();
     }
   });

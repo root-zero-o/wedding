@@ -26,7 +26,7 @@ export function buildIntro() {
     "ko-KR",
   );
   if (matchMedia("(pointer:coarse)").matches)
-    $("#i-hint").textContent = "아래로 스크롤 해보세요";
+    $("#i-hint").textContent = "옆으로 밀어보세요";
 }
 
 const POSTER_W = 300,
