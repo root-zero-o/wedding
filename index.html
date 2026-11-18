@@ -235,16 +235,132 @@
         padding: 28px 26px 24px;
         text-align: center;
       }
+      /* title ribbon */
+      .title-sign {
+        --rb: var(--pink);
+        --rb-dark: var(--pink-dark);
+        --rb-hi: #ff8fb2;
+        --rb-line: var(--ink);
+        position: relative;
+        margin: -74px 6px 22px;
+        padding: 16px 14px 14px;
+        background: var(--rb);
+        box-shadow:
+          0 -4px 0 var(--rb-line),
+          0 4px 0 var(--rb-line),
+          -4px 0 0 var(--rb-line),
+          4px 0 0 var(--rb-line),
+          inset 0 4px 0 var(--rb-hi),
+          inset 0 -6px 0 var(--rb-dark),
+          8px 8px 0 rgba(20, 14, 40, 0.28);
+      }
       .invite h1 {
         font-family: var(--f-head);
         font-weight: 400;
-        font-size: clamp(40px, 10vw, 64px);
+        font-size: clamp(42px, 10.5vw, 64px);
         margin: 0 0 4px;
-        line-height: 1.05;
+        line-height: 1.1;
+        letter-spacing: 2px;
+        color: #fff;
+        text-shadow:
+          -3px 0 var(--rb-line),
+          3px 0 var(--rb-line),
+          0 -3px var(--rb-line),
+          0 3px var(--rb-line),
+          -3px -3px var(--rb-line),
+          3px -3px var(--rb-line),
+          -3px 3px var(--rb-line),
+          3px 3px var(--rb-line),
+          0 6px var(--rb-line),
+          3px 6px var(--rb-line),
+          -3px 6px var(--rb-line);
       }
       .invite .lead {
-        font-size: 17px;
-        margin: 0 0 14px;
+        font-family: var(--f-head);
+        font-size: 19px;
+        margin: 0;
+        letter-spacing: 1px;
+        color: #fff;
+        text-shadow:
+          -2px 0 var(--rb-line),
+          2px 0 var(--rb-line),
+          0 -2px var(--rb-line),
+          0 2px var(--rb-line),
+          0 4px var(--rb-line);
+      }
+      .title-sign .tail {
+        position: absolute;
+        z-index: -1;
+        top: 22px;
+        bottom: -18px;
+        width: 40px;
+        filter: drop-shadow(4px 0 0 var(--rb-line))
+          drop-shadow(-4px 0 0 var(--rb-line))
+          drop-shadow(0 4px 0 var(--rb-line))
+          drop-shadow(0 -4px 0 var(--rb-line));
+      }
+      .title-sign .tail::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--rb-dark);
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 16px 50%);
+      }
+      .tail.tail-l { left: -26px; }
+      .tail.tail-r { right: -26px; transform: scaleX(-1); }
+      .title-sign .spark {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: var(--gold);
+        box-shadow:
+          4px 0 var(--gold),
+          -4px 0 var(--gold),
+          0 4px var(--gold),
+          0 -4px var(--gold);
+        animation: twinkle 1.6s steps(1) infinite;
+      }
+      .spark.s1 { top: -22px; left: 22px; }
+      .spark.s2 { top: -14px; right: 34px; animation-delay: 0.5s; }
+      .spark.s3 { bottom: -28px; right: -2px; animation-delay: 1s; }
+      @keyframes twinkle {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.2; }
+      }
+
+      /* loader */
+      #loader {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        background: #26213a;
+        transition: opacity 400ms ease-out;
+      }
+      #loader.done {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #loader svg {
+        width: 72px;
+        height: 64px;
+        animation: beat 1s steps(1) infinite;
+      }
+      #loader p {
+        margin: 0;
+        font-family: var(--f-px);
+        font-size: 14px;
+        letter-spacing: 3px;
+        color: #ffe9a3;
+      }
+      @keyframes beat {
+        0%, 45%, 100% { transform: scale(1); }
+        15% { transform: scale(1.2); }
+        30% { transform: scale(1.1); }
       }
       .invite .greeting {
         font-size: 15px;
@@ -810,8 +926,13 @@
       }
       @media (prefers-reduced-motion: reduce) {
         .hint b,
-        .hold.new {
+        .hold.new,
+        .title-sign .spark,
+        #loader svg {
           animation: none;
+        }
+        #loader {
+          transition: none;
         }
         .item canvas {
           transition: none;
@@ -820,6 +941,11 @@
     </style>
   </head>
   <body>
+    <div id="loader" role="status" aria-label="불러오는 중">
+      <svg viewBox="0 0 9 8" shape-rendering="crispEdges" aria-hidden="true"><rect x="1" y="0" width="1" height="1" fill="#d63c6e"/><rect x="2" y="0" width="1" height="1" fill="#d63c6e"/><rect x="6" y="0" width="1" height="1" fill="#d63c6e"/><rect x="7" y="0" width="1" height="1" fill="#d63c6e"/><rect x="0" y="1" width="1" height="1" fill="#d63c6e"/><rect x="1" y="1" width="1" height="1" fill="#fff"/><rect x="2" y="1" width="1" height="1" fill="#fff"/><rect x="3" y="1" width="1" height="1" fill="#d63c6e"/><rect x="5" y="1" width="1" height="1" fill="#d63c6e"/><rect x="6" y="1" width="1" height="1" fill="#ff5d8f"/><rect x="7" y="1" width="1" height="1" fill="#ff5d8f"/><rect x="8" y="1" width="1" height="1" fill="#d63c6e"/><rect x="0" y="2" width="1" height="1" fill="#d63c6e"/><rect x="1" y="2" width="1" height="1" fill="#fff"/><rect x="2" y="2" width="1" height="1" fill="#ff5d8f"/><rect x="3" y="2" width="1" height="1" fill="#ff5d8f"/><rect x="4" y="2" width="1" height="1" fill="#d63c6e"/><rect x="5" y="2" width="1" height="1" fill="#ff5d8f"/><rect x="6" y="2" width="1" height="1" fill="#ff5d8f"/><rect x="7" y="2" width="1" height="1" fill="#ff5d8f"/><rect x="8" y="2" width="1" height="1" fill="#d63c6e"/><rect x="0" y="3" width="1" height="1" fill="#d63c6e"/><rect x="1" y="3" width="1" height="1" fill="#ff5d8f"/><rect x="2" y="3" width="1" height="1" fill="#ff5d8f"/><rect x="3" y="3" width="1" height="1" fill="#ff5d8f"/><rect x="4" y="3" width="1" height="1" fill="#ff5d8f"/><rect x="5" y="3" width="1" height="1" fill="#ff5d8f"/><rect x="6" y="3" width="1" height="1" fill="#ff5d8f"/><rect x="7" y="3" width="1" height="1" fill="#ff5d8f"/><rect x="8" y="3" width="1" height="1" fill="#d63c6e"/><rect x="1" y="4" width="1" height="1" fill="#d63c6e"/><rect x="2" y="4" width="1" height="1" fill="#ff5d8f"/><rect x="3" y="4" width="1" height="1" fill="#ff5d8f"/><rect x="4" y="4" width="1" height="1" fill="#ff5d8f"/><rect x="5" y="4" width="1" height="1" fill="#ff5d8f"/><rect x="6" y="4" width="1" height="1" fill="#ff5d8f"/><rect x="7" y="4" width="1" height="1" fill="#d63c6e"/><rect x="2" y="5" width="1" height="1" fill="#d63c6e"/><rect x="3" y="5" width="1" height="1" fill="#ff5d8f"/><rect x="4" y="5" width="1" height="1" fill="#ff5d8f"/><rect x="5" y="5" width="1" height="1" fill="#ff5d8f"/><rect x="6" y="5" width="1" height="1" fill="#d63c6e"/><rect x="3" y="6" width="1" height="1" fill="#d63c6e"/><rect x="4" y="6" width="1" height="1" fill="#ff5d8f"/><rect x="5" y="6" width="1" height="1" fill="#d63c6e"/><rect x="4" y="7" width="1" height="1" fill="#d63c6e"/></svg>
+      <p>LOADING</p>
+    </div>
+    <noscript><style>#loader{display:none}</style></noscript>
     <div id="spacer"></div>
     <div id="stage">
       <canvas id="bg" aria-hidden="true"></canvas>
@@ -827,8 +953,15 @@
         <section class="zone" id="z-intro" aria-label="소개">
           <div class="area">
             <div class="center invite px">
-              <h1 id="i-names"></h1>
-              <p class="lead" id="i-lead"></p>
+              <div class="title-sign">
+                <i class="tail tail-l" aria-hidden="true"></i
+                ><i class="tail tail-r" aria-hidden="true"></i
+                ><i class="spark s1" aria-hidden="true"></i
+                ><i class="spark s2" aria-hidden="true"></i
+                ><i class="spark s3" aria-hidden="true"></i>
+                <h1 id="i-names"></h1>
+                <p class="lead" id="i-lead"></p>
+              </div>
               <p class="greeting" id="i-greeting"></p>
               <div class="together">
                 <span class="label">함께한 날</span>

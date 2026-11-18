@@ -31,3 +31,24 @@ addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(
 document.fonts?.ready.then(()=>placeGuest());
 requestAnimationFrame(frame);
 initGuestbook();
+
+const LOADER_MAX_MS=3000;
+const FONTS=['40px "Do Hyeon"','16px "Gowun Dodum"','16px "Silkscreen"'];
+
+function loadFonts(){
+  if(!document.fonts) return Promise.resolve();
+  return Promise.all(FONTS.map(f=>document.fonts.load(f))).catch(()=>{});
+}
+
+function hideLoader(){
+  const loader=document.getElementById('loader');
+  if(!loader) return;
+  layout(); placeGuest();
+  requestAnimationFrame(()=>{
+    if(reduceMotion){loader.remove();return}
+    loader.addEventListener('transitionend',()=>loader.remove(),{once:true});
+    loader.classList.add('done');
+  });
+}
+
+Promise.race([loadFonts(),new Promise(r=>setTimeout(r,LOADER_MAX_MS))]).then(hideLoader);
